@@ -1,0 +1,87 @@
+include: perl/parse.def
+include: macros/syntax_mydef.def
+include: macros/syntax_c.def
+include: macros/syntax_shell.def
+
+subcode: _autoload
+    $global @itemlist
+
+subcode: text(s)
+    push @itemlist, "'".proper_escape($(s))."'"
+
+subcode: hl(class, s)
+    my $t=proper_escape($(s))
+    push @itemlist, "[$(Ispan),'$(C$(class))','$t']"
+
+subcode: comment(l)
+    my @tlist = split /(\.\.\.+)/, $l
+    $foreach $t in @tlist
+        $if $t=~/^\.\.\./
+            my @dots=split //, $t
+            $for $i=0:@dots
+                push @itemlist, "'.'", 300
+        $else
+            $call text, $t
+
+fncode: proper_escape($l)
+    my $t
+    $call parse_frame
+    
+    subcode:: match
+        $elif $l=~/\G([^'"\\]+)/gc
+            $t.=$1
+        $elif $l=~/\G(['"\\])/gc
+            $t.="\\".$1
+
+    subcode:: process
+        $if $(cur_type) eq "eof"
+            return $t
+        next
+
+#---------------------------------------- 
+fncode: transcribe($src, $type)
+    my $indent=0
+    $foreach $l in @$src
+        $if $l=~/^INDENT/
+            $indent++
+        $elif $l=~/^DEDENT/
+            $indent--
+        $else
+            $if $l =~ /^:\s*(.*)/
+                my $t = $1
+                $if !$t
+                    push @itemlist, "[$(Ireset)]"
+                $elif $t=~/^(\d+)\s*$/
+                    push @itemlist, $1
+                $elif $t=~/^(\d+):\s*$/
+                    push @itemlist, $1
+                    push @itemlist, "[$(Ireset)]"
+                $else
+                    my $t="# $1"
+                    $call hl, comment, $t
+                    push @itemlist, "[$(Idel)]"
+            $elif $l =~ /^css:\s*(\S+)\s*{(.*)}/
+                push @itemlist, "[$(Icss),'$1','$2']"
+            $else
+                $call do_indent
+                $l=~s/&#35;/#/g
+                $l=~s/&#36;/\$/g
+                $l=~s/&#38;/&/g
+                $l=~s/&#99;/c/g
+
+                $if $type eq "mydef"
+                    transcribe_mydef($l)
+                $elif $type eq "c"
+                    transcribe_c($l)
+                $elif $type eq "shell"
+                    transcribe_shell($l)
+                $else
+                    $call comment, $l
+
+                push @itemlist, "[$(Inewline)]"
+
+    subcode: do_indent
+        $if $indent>0
+            my $t=$(Iindent)+$indent
+            push @itemlist, "[$t]"
+

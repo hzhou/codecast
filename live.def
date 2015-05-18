@@ -1,0 +1,247 @@
+include: macros/codecast.def
+include: hello_code.def
+
+page: live
+    $call intro
+    $(if:1)
+        $call hello_k_and_r
+        $call comment_k_and_r
+        $call demo_hello_windows
+        $call speed, 30
+        $call comment_windows
+        $call intro_mydef
+        $call mydef_hello_c
+        $call mydef_comment
+        $call wrapit_up
+
+    $call ship_live_page, live
+            
+subcode: intro
+    $call set_output, narrator
+    &call write
+        Hi, my name is Hui Zhou. 
+        Today I want to talk about programming ...
+        css: #mydef {background-color:$(color_code)}
+
+#---------------------------------------- 
+subcode: comment_k_and_r
+    $call reset_output, narrator
+    &call write
+        hello world is how we started learning programming, 
+        let's dwell on it a little bit ...
+        :1000:
+        Let's recognize that there are two parts in the code below
+        :2000
+        1. programming part ... the part we love ... 
+        ...  is what programmer wrote what he wants to write
+        :3000
+        2. boiler plate part ... the part we hate ...
+        ...  is what programmer wrote because of being told to 
+        :4000:
+        In hello world, what programmer want to write is ...
+
+    $call reset_output, mydef
+    &call write, perl
+        print "hello world"
+        :2000
+    &call set_output, narrator
+    &call write
+        However, they were told that they can't just do that ...
+        They have to ...
+    $call hello_c_again
+    &call reset_output, narrator
+    &call write
+        Boiler plate code is where programmer learning the language
+        ... necessary before one can actually program.
+        ... but the reason we want to learn the language
+        ... is to write what we want, right?
+        :2000
+        It is not obvious in hello world, but in practical program, 
+        the ratio of programming/boiler_plate increases ...
+        ... which is re-assuring.
+        :4000
+        but then, we were hit by this ...
+
+#---------------------------------------- 
+subcode: comment_windows
+    $call reset_output, narrator
+    &call write
+        Unlike classic C, 
+        things does not get better for programmers this point on 
+        programmers were  being told where to add menu ...
+        ... being told where to get input ...
+        ... being told where to draw and how to draw ...
+        ...
+        whatever we want to do in windows, 
+        we start to develop the habbit of seeking ...
+        to be told on what to do ...
+        :
+        then, ... the boiler plates transforms ...
+        we get framework, we get APIs ...
+        Now I don't know how to do anything any more
+        (including typical tasks I can do in plain C) ...
+        Worse, I am not even sure what I want to do any more ...
+        I was often being told on what I should want to do ...
+        ... ...
+        API is a simply a set of system ...
+        telling programmers what to do...
+        In addition to API, we also get IDE, 
+        and all kinds of visual tools.
+        We don't have to type in those boiler plate code, 
+        but we were still being told ... 
+        on where to click, on which menu sequence to invoke. 
+        We are following invisible boiler plates ...
+        ...
+        And we were told it is better ...
+        Because instead of doing what you want to do 
+        with unclean, 
+        unorganized, 
+        unsystematic every other way, 
+        now every one is doing this 
+        better, 
+        systematic, 
+        uniform ways. 
+        Now programmers can work together and create industry wonders... ... 
+
+        :
+        That is nice and cool, but ...
+        ... but ... 
+        what about my love for programming? ... ...
+
+#---------------------------------------- 
+subcode: intro_mydef
+    $call reset_output, mydef
+    $call reset_output, narrator
+    &call write
+        Don't get me wrong. 
+        I appreciate the importance of boiler plate code ...
+        they are the portal to the underlying mechanism ...
+        they are boiler plate, not library, 
+        because the programmer can actually 
+        alter every parts of the boiler plate code, 
+        ... achieving finer control of their intention ...
+        ... albeit most of the time they are just in the way ...
+        :
+        I also appreciate the importance of industry scale...
+        they created modern life that I become to enjoy ...
+        ...
+        ... but does it have to come with a price of 
+        sacrificing my love for programming? ... ...
+        :
+        I am not sure my kind of feeling is common
+        ( ... it is probably just me ...)
+        If you don't find sympathy, 
+        you have read enough of my rant ...
+        ... Thank You! ... 
+        (you can close the page now)
+        :4000:
+        I actually believe I found a solution
+        ... of both appreicating the importance of 
+        boiler plates, 
+        industry systematic power ...
+        and also sustain my love for programming ...
+        how about introducing a meta layer 
+        ... macro layer 
+        ... template layer 
+        ... or whatever you like to call, 
+        ... a layer that do the chores of boiler plates for us? ...
+        I call it MyDef ...
+
+#---------------------------------------- 
+subcode: mydef_comment
+    $call reset_output, narrator
+    &call write, narrator
+        The first line is still boiler plate, but that is it
+        We get right down to the programming part ...
+        ... where we write what we want to write ...
+        ... (the other side of mydef: 
+        ...   no one is going to tell you what to write any more
+        ...   there is more than one way to do it ...)
+        :4000:
+        The important boiler plates is still there. 
+        You still need write that, 
+        because that is the gate way to any system. 
+        But you only need to write it once, 
+        ... or a couple more times when you feel like to ...
+        ... then they are tucked away ...
+        ... out of sight ... out of mind ...
+        :
+        Let me expand the following code a bit ...
+    $call reset_output, mydef
+    &call write, mydef
+        include: std_c.def
+
+        page: hello
+            subcode: main
+                $call basic_frame
+
+                subcode: main2
+                    puts("hello world");
+
+
+        ---- in std_c.def ------------------------
+
+        subcode: basic_frame
+            $include stdio
+            int main(int argc, char ** argv){
+                $call main2
+            }
+
+    $call reset_output, narrator
+    &call write, narrator
+        That is the idea,
+        plain and simple ...
+        you write you boiler plate code
+        ... once ...
+        ... and tuck it away ...
+        ... then concentrate on programming ...
+        ... you get to eat your cake (boiler plate) and keep it too 
+        (I know, bad joke )
+        :
+        Of course, eventually I get carried away a little.
+        I let MyDef add semicolons for me when they are missing ...
+        ... add curly braces for me when I only indent
+        ... infer some types for me when I felt lazy
+        ... translate some DSLs for me when I felt naughty
+        ... perform inline macros as well as ...
+        ... block level code partition/organization/factoring
+        ... I used it not just for C
+        ... but also for Perl, HTML, Javascript, PHP, ...
+        ... well almost anything nowadays ...
+        :
+        But with MyDef, you never feel you are forced to learn a new language ...
+        ... even that is how it appears in the eyes of folks who don't use MyDef
+        ... In the C example, I am thinking in C ...
+        ... writing in C ...
+        ... compile, debug, run as C ...
+        ... in fact, I even have the exact C boiler plates in mind as I program
+        ... except I short cut all the boiler plates away 
+        ... (some of the boiler plates are micro ones that
+        ...  many senior programmers were not even aware of them
+        ...  such as semicolons, braces, for loops ...)
+        With MyDef, I gained the power of a new programming language
+        ... without actually learning or getting one.
+
+subcode: wrapit_up
+    $call reset_output, narrator
+    &call write
+        well, enough ranting.
+        If you are reading this, I can't thank you enough
+        for your attention ... and patience. 
+        This code casting thing is fun and all, but I
+        am running out of steam ...
+        ... after all, it is just me typing here ...
+        ... you will understand ...
+        :
+        Anyway, let me wrap it up with 
+        two more examples
+        css: #mydef {height: 350px}
+        css: #output {height: 350px}
+        :1000
+    $call mydef_win32
+    $call mydef_live
+    $call set_output, narrator
+    &call write
+        and some links bellow
+        css: #links {display: block;}
+

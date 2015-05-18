@@ -1,0 +1,158 @@
+htmlcode:: meta
+    <style id="inject"></style>
+    $script
+        var style = $(id:inject)
+
+jscode:: js_onload
+    $call start_write, $(id:mydef)
+
+jscode:: js_global
+    # var stack=[[3,"page:"],[2,"label"], " test, js_frame\n    module: www\n    print \"Hello World!\""]
+    var debug=0
+    var cur={done:1}
+    var speed=$(default_speed)
+    $function write()
+        var delay=speed
+        $if cur.act
+            $call @do_pending_action
+        $elif cur.done
+            $if stack.length==0
+                return
+            $else
+                var item = stack.shift()
+                $if item
+                    $call do_item
+        $else
+            $call do_char
+
+        setTimeout(write, delay)
+
+    # -------------------------
+    subcode: do_item
+        $if debug
+            $print item
+        delay=5
+        $if typeof item ==='string'
+            $call start_string, item, text, -
+        $elif typeof item === 'number'
+            delay = item
+        $else # array
+            $if 0
+                NOOP
+            &call is, newline
+                $call do_newline
+            $elif item[0]>$(Iindent)
+                $call do_indent, item[0]-$(Iindent)
+            &call is, reset
+                $if item.length>1
+                    $call reset_container, item[1]
+                $else
+                    $call reset_cur_container
+            &call is, container
+                $call set_container, item[1]
+            &call is, speed
+                speed = item[1]
+            &call is, css
+                $call do_css, item[1], item[2]
+            &call is, CSS
+                $call do_CSS, item[1]
+            &call is, span
+                $call start_string, item[2], 'span', item[1]
+            &call is, del
+                cur.act='delete'
+                delay = 1000
+
+        # ---------------------
+        subcode: is(type)
+            $elif item[0] == $(I$(type))
+                BLOCK
+
+    subcode:: do_pending_action
+        $if cur.act == 'delete'
+            var e=cur.element
+            cur.element=e.previousSibling
+            cur.container.removeChild(e)
+            cur.act = null
+
+    subcode: do_char
+        var c = cur.msg.slice(cur.idx, cur.idx+1)
+        $call append_c
+        cur.idx++
+
+        $if cur.idx>=cur.len
+            cur.done=1
+
+    subcode: do_newline
+        $if cur.element
+            var c = "\n"
+            $call append_c
+            delay=speed*40
+
+    subcode: do_indent(indent)
+        var c=''
+        $for i=0:$(indent)
+            c+="    "
+        $call append_c
+
+    subcode: append_c
+        $if cur.element.nodeType==1
+            cur.element.innerHTML += c
+        $elif cur.element.nodeType==3
+            cur.element.data += c
+
+    # --------------------
+    jscode: start_string(s, type, class)
+        $call append_node
+        cur.len=$(s).length
+        $if cur.len>0
+            cur.msg=$(s)
+            cur.idx=0
+            cur.done=0
+            cur.container.scrollTop = cur.container.scrollHeight
+
+        subcode: append_node
+            $(if:type=text)
+                var e=document.createTextNode('')
+                cur.type=null
+            $(else)
+                var e=document.createElement($(type))
+                e.setAttribute('class', $(class))
+                cur.type=$(type)
+            cur.container.appendChild(e)
+            cur.element=e
+
+    jscode: reset_container(id)
+        $call set_container, $(id)
+        cur.container.innerHTML=''
+
+    jscode: reset_cur_container
+        cur.container.innerHTML=''
+
+    jscode: set_container(id)
+        cur.container = document.getElementById($(id))
+        $if !cur.container
+            $print "Failed to set container: "+$(id)
+
+    jscode: do_CSS(css)
+        style.textContent += $(css)+"\n"
+
+    jscode: do_css(sel, css)
+        var e = document.querySelector($(sel))
+        $if e
+            var all = $(css).split(';')
+            $for i=0:all.length
+                var pair = all[i].split(':')
+                e.style[pair[0]]=pair[1]
+
+#---------------------------------------- 
+jscode: start_write(el)
+    cur.container = $(el)
+    $if cur.container
+            setTimeout(write, 10)
+
+
+
+
+
+
+

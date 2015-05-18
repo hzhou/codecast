@@ -1,0 +1,43 @@
+fncode: transcribe_mydef($l)
+    $if $l=~/^page:(.*)/
+        $call hl, key1, "page:"
+        transcribe_mydef_text($1)
+    $elif $l=~/^(\w+code|macros):(.*)/
+        $call hl, key2, "$1:"
+        transcribe_mydef_text($2)
+    $elif $l=~/^(\$(?:if|elif|else|for|while|foreach|print)\b)(.*)/
+        $call hl, keyword, $1
+        transcribe_mydef_text($2)
+    $elif $l=~/^([\$&]call)\b(.*)/
+        my $t="$1"
+        $call hl, keyword, $t
+        transcribe_mydef_text($2)
+    $elif $l=~/^#(.*)/
+        my $t="#$1"
+        $call hl, comment, $t
+    $elif $l=~/^(\w+):(.*)/
+        $call hl, attr, "$1:"
+        transcribe_mydef_text($2)
+    $elif $l
+        transcribe_mydef_text($l)
+
+fncode: transcribe_mydef_text($l)
+    $call parse_frame
+
+    subcode:: match
+        $call double_quote
+        $call single_quote
+        $case $l=~/\G([^'"]+)/gc
+            $cur = [$1, "text"]
+        &call if_lex, (.)
+            $cur = [$1, "text"]
+
+    subcode:: process
+        $if $(cur_type) eq "eof"
+            return
+        $elif $(cur_type)=~/^['"]/
+            $call hl, str, $(cur_atom)
+        $else
+            $call text, $(cur_atom)
+        next
+

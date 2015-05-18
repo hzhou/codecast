@@ -1,0 +1,202 @@
+subcode: mydef_hello_c
+    $call set_output, mydef
+    &call write, mydef
+        page: hello, basic_frame
+            $print hello world
+
+    $call set_output, output
+    &call write, shell
+        css: #mydef {width: 45%;}
+        css: #output{width: 45%;}
+        :1000
+        css: #output {background-color: $(color_code)}
+        :2000
+        $ mydef_page -mc hello.def
+        PAGE: hello
+          --> [./hello.c]
+        $ gcc hello.c -o hello && ./hello
+        hello world
+        $
+
+subcode: hello_c_again
+    $call reset_output, mydef
+    $call speed, 40
+    &call write, c
+        : declare headers that yet to be clear why and which is necessary ... ...
+        #include <stdio.h>
+        : set up a container to fit in the language model ... ...
+        main()
+        : remember to write the delimiter even though the code is already delimited ... ...
+        {
+            : finally to where what they want to write ... ...
+            : but have to be told on the exact name and format ... ...
+            printf("hello, world\n")
+            : it's not necessary here, but often being told not to forget about ; ... ...
+            ;
+        : being told that have to balance the delimiter which was being told to insert in the first place ... ...
+        }
+
+#---------------------------------------- 
+subcode: mydef_win32
+    $call reset_output, mydef
+    &call write, mydef
+        page: test, basic_frame
+            module: win32
+
+            $global hwnd_main
+            $call wc_background, COLOR_BACKGROUND
+            &#35;-- register_wndclass will also create WndProc and hook up all the message handlers
+            $call register_wndclass, "test", WndProc_main
+            $call create_window, hwnd_main, "test"
+            $call win_show, hwnd_main
+            &#35;---- $print in win32 prints to debug string ---
+            $print starting the loop
+            $call win_loop
+
+        &#35; ---- below, the name has meaning
+        subcode: main_on_WM_PAINT
+            &call on_paint
+                &#35; fun, loving, programming part!
+                TextOut(hdc, 10, 10, "Hello World!", 12)
+
+subcode: mydef_live
+    $call reset_output, output
+    &call write, mydef
+        page: live, basic_frame
+            $call intro
+            $call hello_k_and_r
+            $call comment_k_and_r
+            $call demo_hello_windows
+            $call speed, 30
+            $call comment_windows
+            $call intro_mydef
+            $call mydef_hello_c
+            $call mydef_comment
+            $call wrapit_up
+
+            $call ship_live_page
+
+        subcode: intro
+            $call set_output, narrator
+            &call write
+                Hi, my name is Hui Zhou. 
+                Today I want to talk about programming ...
+                &#99;ss: #mydef {background-color:$(color_code)}
+
+        ... ...
+
+#---------------------------------------- 
+subcode: demo_hello_windows
+    $call reset_output, mydef
+    $call speed, 0
+    $call hello_windows
+    $call speed, $(default_speed)
+    $call pause, 1000
+
+#---------------------------------------- 
+subcode: hello_k_and_r
+    $call reset_output, narrator
+    &call write
+        Hmm... what should we write? ... 
+        How about Hello World? ... the very classic one?
+    $call set_output, mydef
+    $call pause, 1000
+    &call write, c
+        //Classic hello world from K&R
+        : include information about standard library
+        #include <stdio.h>
+        : define a function named main that receives no argument values
+        main()
+        : statements of main are enclosed in braces
+        {
+            :main calls library function printf to print this sequence of characters;
+            printf("hello, world\\n");
+            :\\n represents the newline character
+        : ohh, very important, don't forget to close the curly brace!
+        }
+
+
+#---------------------------------------- 
+subcode: hello_windows
+    &call write, c
+        #ifndef UNICODE
+        #define UNICODE
+        #endif 
+
+        #include <windows.h>
+
+        LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+        int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
+        {
+            // Register the window class.
+            const wchar_t CLASS_NAME[]  = L"Sample Window Class";
+            
+            WNDCLASS wc = { };
+
+            wc.lpfnWndProc   = WindowProc;
+            wc.hInstance     = hInstance;
+            wc.lpszClassName = CLASS_NAME;
+
+            RegisterClass(&wc);
+
+            // Create the window.
+
+            HWND hwnd = CreateWindowEx(
+                0,                              // Optional window styles.
+                CLASS_NAME,                     // Window class
+                L"Learn to Program Windows",    // Window text
+                WS_OVERLAPPEDWINDOW,            // Window style
+
+                // Size and position
+                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+
+                NULL,       // Parent window    
+                NULL,       // Menu
+                hInstance,  // Instance handle
+                NULL        // Additional application data
+                );
+
+            if (hwnd == NULL)
+            {
+                return 0;
+            }
+
+            ShowWindow(hwnd, nCmdShow);
+
+            // Run the message loop.
+
+            MSG msg = { };
+            while (GetMessage(&msg, NULL, 0, 0))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+
+            return 0;
+        }
+
+        LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+        {
+            switch (uMsg)
+            {
+            case WM_DESTROY:
+                PostQuitMessage(0);
+                return 0;
+
+            case WM_PAINT:
+                {
+                    PAINTSTRUCT ps;
+                    HDC hdc = BeginPaint(hwnd, &ps);
+
+                    FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+
+                    EndPaint(hwnd, &ps);
+                }
+                return 0;
+
+            }
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+        }
+    
+

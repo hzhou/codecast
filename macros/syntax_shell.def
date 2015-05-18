@@ -1,0 +1,10 @@
+fncode: transcribe_shell($l)
+    $if $l=~/^\$(.*)/
+        my $t='$'
+        $call hl, key1, $t
+        $call hl, cmd, $1
+    $else
+        $call speed, $(flash_speed)
+        $call hl, out, $l
+        $call speed, $(read_speed)
+

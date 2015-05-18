@@ -1,0 +1,41 @@
+fncode: transcribe_c($l)
+    $if $l=~/^#/
+        $call hl, pre, $l
+    $else
+        my $text
+        $call parse_frame
+
+    subcode:: match
+        $call double_quote
+        $call single_quote
+        $call token, type, (char|int|signed|unsigned|float|double|long|short|void|struct|union|enum)\b
+        $call token, keyword, (for|while|do|if|else|goto|break|switch)\b
+        $call token, comment, (\/\/.*)
+        $call token, comment, (\/\*.*?\*\/)
+        $call token, word, (\w+)
+        $elif $l=~/\G([^'"\/\w]+)/gc
+            $cur=[$1, "nonword"]
+
+    subcode: chl(class, s)
+        $if $text
+            $call text, $text
+            $text=""
+        $call hl, $(class), $(s)
+
+    subcode:: process
+        $if $(cur_type) eq "eof"
+            $if $text
+                $call text, $text
+            return
+        $elif $(cur_type)=~/^['"]/
+            $call chl, str, $(cur_atom)
+        $elif $(cur_type) eq "comment"
+            $call chl, comment, $(cur_atom)
+        $elif $(cur_type) eq "type"
+            $call chl, key1, $(cur_atom)
+        $elif $(cur_type) eq "keyword"
+            $call chl, key2, $(cur_atom)
+        $else
+            $text.=$(cur_atom)
+        next
+

@@ -1,0 +1,39 @@
+macros:
+    Ireset: 0
+    Icontainer: 1
+    Ispan: 3
+    Icss: 4
+    ICSS: 5
+    Inewline: 6
+    Idel: 7
+    Ispeed: 8
+    Iindent: 100
+    # 104 would mean indent 4
+
+    Ccomment: c1
+    Cstr: c2
+    Ckey1: c3
+    Ckey2: c4
+    Ckeyword: c5
+    Cattr: c6
+    Cpre: c7
+    Ccmd: c11
+    Cout: c12
+
+    color_body: #3f5263
+    color_code: #444
+
+    default_speed: 16
+    read_speed: 30
+    flash_speed: 0
+
+subcode: css_syntax
+    CSS: .$(Ccomment) {color: #857F6B; font-style: italic;}
+    CSS: .$(Ckey1)   {color: #E0A010;}
+    CSS: .$(Ckey2)   {color: #ea4; }
+    CSS: .$(Cattr)   {color: #888; }
+    CSS: .$(Ckeyword) {color: #0b0;}
+    CSS: .$(Cstr)  {color: #E020B0;}
+    CSS: .$(Cpre)  {color: #48b;}
+    CSS: .$(Ccmd)  {color: #eee;}
+    CSS: .$(Cout)  {color: #888;}

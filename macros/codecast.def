@@ -1,0 +1,38 @@
+include: macros/id.def
+include: macros/syntax.def
+include: ext.def
+
+#---------------------------------------- 
+subcode: set_output(id)
+    push @itemlist, "[$(Icontainer),'$(id)']"
+
+subcode: reset_output(id)
+    push @itemlist, "[$(Ireset),'$(id)']"
+
+subcode: pause(millsec)
+    push @itemlist, $(millsec)
+
+subcode: speed(millsec)
+    push @itemlist, "[$(Ispeed), $(millsec)]"
+
+#---------------------------------------- 
+perlcode: write
+    my $type=$param
+    $call grab_block
+    push @$out, "transcribe(\\\@source, '$type');"
+
+#----------------------------------------
+subcode: ship_live_page(htmlname)
+    &call open_w, output/t.def
+        print Out "include: content_$(htmlname).def\n"
+        print Out "include: macros/id.def\n"
+        print Out "include: macros/js_codecast.def\n"
+        print Out "\n"
+        print Out "page: $(htmlname), js_frame\n"
+        print Out "    module: www\n"
+        print Out "\n"
+        print Out "jscode:: js_global\n"
+        print Out "    var stack = [".join(',', @itemlist)."];\n"
+
+    system "mydef_page -mwww -o. output/t.def"
+
