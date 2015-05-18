@@ -45,7 +45,7 @@ subcode: mydef_win32
 
             $global hwnd_main
             $call wc_background, COLOR_BACKGROUND
-            &#35;-- register_wndclass will also create WndProc and hook up all the message handlers
+            &#35;-- WndProc and hook up all the message handlers
             $call register_wndclass, "test", WndProc_main
             $call create_window, hwnd_main, "test"
             $call win_show, hwnd_main
