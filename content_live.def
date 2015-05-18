@@ -17,10 +17,12 @@ htmlcode:: content
 
 
     subcode: links
-        CSS: #links {clear: both; color: white; width: 60%; margin: auto}
+        CSS: #links {clear: both; color: white; width: 650px; margin: auto; padding-top: 50px;}
         CSS: #links {display: none}
-        CSS: #links div.label {width: 300px; padding: 10px; float left;}
-        CSS: #links a {color: #bbf; padding: 25px; margin-top: 35px;}
+        CSS: #links div.label {width: 250px; float: left}
+        CSS: #links div.link {width: 400px; float: left;}
+        CSS: #links div.clear {clear: both; height: 10px;}
+        CSS: #links a {color: #bbf; }
         $div #links
             $call link, MyDef Repository:, <a href="$(github)">$(github)</a>
             $call link, MyDef Documentation:, <a href="$(gitbook)">$(gitbook)</a>
@@ -36,5 +38,7 @@ htmlcode:: content
         subcode: link(a, b)
             $div label
                 $(a)
-            $(b)
+            $div link
+                $(b)
+            $div clear, /
 
