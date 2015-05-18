@@ -1,4 +1,3 @@
-
 htmlcode:: content
     $call @css_syntax
     CSS: * {transition: all 1s;}
@@ -16,23 +15,26 @@ htmlcode:: content
     $pre #output, /
     $call links
 
-    macros:
-        gitbook: http://huizhou.gitbooks.io/programming-with-mydef/content/
-        github: https://github.com/hzhou/MyDef
-        blog: http://hz2.org/blog/
 
     subcode: links
-        CSS: #links {clear: both; display: none; color: white; width: 60%; margin: auto}
+        CSS: #links {clear: both; color: white; width: 60%; margin: auto}
+        CSS: #links {display: none}
+        CSS: #links div.label {width: 300px; padding: 10px; float left;}
         CSS: #links a {color: #bbf; padding: 25px; margin-top: 35px;}
         $div #links
-            $table
-                $call link, MyDef Repository:, <a href="$(github)">$(github)</a>
-                $call link, MyDef Documentation:, <a href="$(gitbook)">$(gitbook)</a>
-                $call link, MyDef Blogs:, <a href="$(blog)">$(blog)</a>
+            $call link, MyDef Repository:, <a href="$(github)">$(github)</a>
+            $call link, MyDef Documentation:, <a href="$(gitbook)">$(gitbook)</a>
+            $call link, MyDef Blogs:, <a href="$(blog)">$(blog)</a>
+            $call link, CodeCast Repository (this page):, <a href="$(codecast)">$(codecast)</a>
+        # -----
+        macros:
+            gitbook: http://huizhou.gitbooks.io/programming-with-mydef/content/
+            github: https://github.com/hzhou/MyDef
+            blog: http://hz2.org/blog/
+            codecast: https://github.com/hzhou/codecast
+
         subcode: link(a, b)
-            $tr
-                $td
-                    $(a)
-                $td
-                    $(b)
+            $div label
+                $(a)
+            $(b)
 
