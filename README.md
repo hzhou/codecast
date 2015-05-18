@@ -15,4 +15,9 @@ Javascript to build a virtual machine, reads in from a JSON action list, and per
 
 An offline Perl engine transcribe presentation text/code into JSON action list, perform markup like translation as well syntax highlighting. The output is a static webpage that runs the presentation.
 
+### To Run
 
+    $ mydef_make
+    $ make
+    $ perl out/live.pl
+        [output live.html]
